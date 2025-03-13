@@ -24,7 +24,7 @@ const Index = () => {
         <main className="flex flex-1 flex-col">
           <div className="container flex-1 flex items-center justify-center p-4 md:p-8">
             <div className="w-full max-w-2xl h-[75vh] overflow-hidden rounded-xl border shadow-sm bg-card">
-              <ChatContainer initialMessage="👋 Hello! I'm your AI assistant running on Ollama with Llama 3.1 8B. How can I help you today?" />
+              <ChatContainer initialMessage="Hello! How can I help you today? You can type a message or upload an image." />
             </div>
           </div>
         </main>
@@ -32,7 +32,7 @@ const Index = () => {
         <footer className="border-t py-6 md:py-0">
           <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
             <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-              Built with Ollama and Llama 3.1 8B
+              Built with Ollama and Llama 3.2 Vision (11B)
             </p>
           </div>
         </footer>

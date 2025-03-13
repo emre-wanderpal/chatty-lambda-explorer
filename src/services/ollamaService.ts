@@ -1,4 +1,3 @@
-
 interface OllamaRequestOptions {
   model: string;
   prompt: string;
@@ -24,7 +23,7 @@ export class OllamaService {
   private baseUrl: string;
   private model: string;
 
-  constructor(baseUrl: string = "http://localhost:11434", model: string = "llama3.2-vision") {
+  constructor(baseUrl: string = "http://localhost:11434", model: string = "llama3.2-vision:11b") {
     this.baseUrl = baseUrl;
     this.model = model;
   }
@@ -75,7 +74,6 @@ export class OllamaService {
     onComplete: (fullResponse: string, context?: number[]) => void,
     context?: number[]
   ): Promise<void> {
-    // Adding specific instructions to the prompt for formatting and LaTeX support
     const enhancedPrompt = `${prompt}\n\nPlease format your response using markdown. Use **bold** for emphasis, - for bullet points, 1. for numbered lists, # for headings. If there are any scientific concepts, use $formula$ for inline math and $$formula$$ for block equations. Use \`code\` for inline code and \`\`\` for code blocks.`;
     
     const requestOptions: OllamaRequestOptions = {
@@ -119,7 +117,6 @@ export class OllamaService {
       let responseContext: number[] | undefined;
       let buffer = "";
 
-      // Read the stream one chunk at a time
       while (true) {
         const { done, value } = await reader.read();
         
@@ -135,12 +132,8 @@ export class OllamaService {
             const data = JSON.parse(line) as OllamaResponse;
             const responseChunk = data.response;
             
-            // For real-time character-by-character streaming
-            // Send each character directly to the UI for immediate rendering
             fullResponse += responseChunk;
             
-            // Send the chunk immediately to the UI - character by character
-            // This ensures a more natural typing effect
             onChunk(responseChunk);
             
             if (data.done && data.context) {
