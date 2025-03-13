@@ -18,19 +18,52 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   isLoading = false,
   images = []
 }) => {
-  // Convert markdown-style code blocks to HTML
+  // Enhanced markdown processing
   const processContent = (text: string) => {
     // Handle code blocks with ```
-    const codeBlockRegex = /```(?:\w+)?\n([\s\S]*?)```/g;
-    const processedText = text.replace(codeBlockRegex, (match, code) => {
+    let processedText = text.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, code) => {
       return `<pre class="bg-muted p-2 rounded-md overflow-x-auto my-2"><code>${code}</code></pre>`;
     });
     
     // Handle inline code with `
-    const inlineCodeRegex = /`([^`]+)`/g;
-    return processedText.replace(inlineCodeRegex, (match, code) => {
+    processedText = processedText.replace(/`([^`]+)`/g, (match, code) => {
       return `<code class="bg-muted px-1 py-0.5 rounded">${code}</code>`;
     });
+    
+    // Handle headings (# Heading)
+    processedText = processedText.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, content) => {
+      const level = hashes.length;
+      const fontSize = 6 - level + 0.75; // h1 = 1.75rem, h2 = 1.5rem, etc.
+      return `<h${level} class="text-${fontSize}xl font-bold mt-4 mb-2">${content}</h${level}>`;
+    });
+    
+    // Handle bold text (**text**)
+    processedText = processedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Handle italic text (*text*)
+    processedText = processedText.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
+    // Handle ordered lists
+    processedText = processedText.replace(/^\d+\.\s+(.+)$/gm, '<li class="ml-4">$1</li>');
+    
+    // Handle unordered lists
+    processedText = processedText.replace(/^-\s+(.+)$/gm, '<li class="ml-4">• $1</li>');
+    
+    // Handle LaTeX-style math blocks with $$ delimiters
+    // Note: This is a placeholder, you would need a LaTeX renderer library to actually render LaTeX
+    processedText = processedText.replace(/\$\$(.*?)\$\$/g, (match, formula) => {
+      return `<div class="latex-block py-1 px-2 my-2 bg-muted/50 rounded-md text-center">${formula}</div>`;
+    });
+    
+    // Handle inline LaTeX with $ delimiters
+    processedText = processedText.replace(/\$([^$]+)\$/g, (match, formula) => {
+      return `<span class="latex-inline px-1 bg-muted/30 rounded">${formula}</span>`;
+    });
+    
+    // Handle line breaks
+    processedText = processedText.replace(/\n\n/g, '<p class="my-2"></p>');
+    
+    return processedText;
   };
 
   return (

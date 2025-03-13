@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -53,38 +52,47 @@
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 0%; /* Pure black */
+    --foreground: 0 0% 100%; /* Pure white */
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 5%; /* Very dark gray (almost black) */
+    --card-foreground: 0 0% 100%; /* Pure white */
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 5%; /* Very dark gray (almost black) */
+    --popover-foreground: 0 0% 100%; /* Pure white */
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 0 0% 90%; /* Light gray (almost white) */
+    --primary-foreground: 0 0% 0%; /* Pure black */
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 15%; /* Dark gray */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 15%; /* Dark gray */
+    --muted-foreground: 0 0% 70%; /* Light gray */
 
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 20%; /* Dark gray */
+    --accent-foreground: 0 0% 100%; /* Pure white */
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%; /* Dark red */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 224 76% 48%;
+    --border: 0 0% 20%; /* Dark gray */
+    --input: 0 0% 20%; /* Dark gray */
+    --ring: 0 0% 80%; /* Light gray */
 
-    --chat-user: 217 91% 60%;
-    --chat-user-foreground: 0 0% 100%;
-    --chat-ai: 217 33% 17%;
-    --chat-ai-foreground: 210 40% 98%;
+    --chat-user: 0 0% 80%; /* Light gray */
+    --chat-user-foreground: 0 0% 0%; /* Pure black */
+    --chat-ai: 0 0% 15%; /* Dark gray */
+    --chat-ai-foreground: 0 0% 100%; /* Pure white */
+
+    --sidebar-background: 0 0% 5%; /* Very dark gray (almost black) */
+    --sidebar-foreground: 0 0% 70%; /* Light gray */
+    --sidebar-primary: 0 0% 80%; /* Light gray */
+    --sidebar-primary-foreground: 0 0% 0%; /* Pure black */
+    --sidebar-accent: 0 0% 15%; /* Dark gray */
+    --sidebar-accent-foreground: 0 0% 100%; /* Pure white */
+    --sidebar-border: 0 0% 20%; /* Dark gray */
+    --sidebar-ring: 0 0% 70%; /* Light gray */
   }
 }
 

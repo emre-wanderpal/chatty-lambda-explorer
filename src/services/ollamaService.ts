@@ -75,9 +75,12 @@ export class OllamaService {
     onComplete: (fullResponse: string, context?: number[]) => void,
     context?: number[]
   ): Promise<void> {
+    // Adding specific instructions to the prompt for formatting
+    const enhancedPrompt = `${prompt}\n\nPlease format your response using markdown. Use **bold** for emphasis, - for bullet points, 1. for numbered lists, # for headings. If there are any scientific concepts, use $formula$ for inline math and $$formula$$ for block equations. Use \`code\` for inline code and \`\`\` for code blocks.`;
+    
     const requestOptions: OllamaRequestOptions = {
       model: this.model,
-      prompt,
+      prompt: enhancedPrompt,
       stream: true,
       options: {
         temperature: 0.7,
@@ -115,6 +118,8 @@ export class OllamaService {
       let fullResponse = "";
       let responseContext: number[] | undefined;
 
+      // Improved streaming with controlled chunk size
+      // This helps simulate a more natural typing effect
       while (true) {
         const { done, value } = await reader.read();
         
@@ -128,8 +133,27 @@ export class OllamaService {
         for (const line of lines) {
           try {
             const data = JSON.parse(line) as OllamaResponse;
-            fullResponse += data.response;
-            onChunk(data.response);
+            
+            // Simulate more natural typing by breaking larger chunks
+            // into smaller ones (this is purely visual, the full text is still processed)
+            const responseChunk = data.response;
+            
+            // For natural typing effect, we don't want to stream huge chunks at once
+            if (responseChunk.length > 3) {
+              // Break into words or smaller chunks for more natural flow
+              const words = responseChunk.match(/\S+|\s+/g) || [responseChunk];
+              
+              for (const word of words) {
+                fullResponse += word;
+                onChunk(word);
+                
+                // Add a small delay for a more natural typing effect
+                // This is handled by the UI, not actually implementing delay here
+              }
+            } else {
+              fullResponse += responseChunk;
+              onChunk(responseChunk);
+            }
             
             if (data.done && data.context) {
               responseContext = data.context;
