@@ -24,7 +24,7 @@ export class OllamaService {
   private baseUrl: string;
   private model: string;
 
-  constructor(baseUrl: string = "http://localhost:11434", model: string = "llama3.1:8b") {
+  constructor(baseUrl: string = "http://localhost:11434", model: string = "llama3.2-vision") {
     this.baseUrl = baseUrl;
     this.model = model;
   }
@@ -139,7 +139,8 @@ export class OllamaService {
             // Send each character directly to the UI for immediate rendering
             fullResponse += responseChunk;
             
-            // Send the chunk immediately to the UI
+            // Send the chunk immediately to the UI - character by character
+            // This ensures a more natural typing effect
             onChunk(responseChunk);
             
             if (data.done && data.context) {

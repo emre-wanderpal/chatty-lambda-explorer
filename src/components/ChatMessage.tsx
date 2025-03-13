@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import { cn, containsLaTeX } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
@@ -28,10 +29,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   }, [content]);
 
   const processMessageContent = (text: string) => {
+    // Split by LaTeX delimiters: $...$ for inline and $$...$$ for block
     const segments = text.split(/(\$\$[\s\S]*?\$\$|\$[^$\n]+?\$)/g);
     
     const renderedSegments: React.ReactNode[] = segments.map((segment, index) => {
       if (segment.startsWith('$$') && segment.endsWith('$$')) {
+        // Block LaTeX formula
         const formula = segment.slice(2, -2);
         try {
           return (
@@ -44,6 +47,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           return <code key={index}>{segment}</code>;
         }
       } else if (segment.startsWith('$') && segment.endsWith('$')) {
+        // Inline LaTeX formula
         const formula = segment.slice(1, -1);
         try {
           return <InlineMath key={index} math={formula} />;
@@ -52,6 +56,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           return <code key={index}>{segment}</code>;
         }
       } else {
+        // Regular text with markdown formatting
         const processedText = processMarkdown(segment);
         return (
           <span key={index} dangerouslySetInnerHTML={{ __html: processedText }} />
@@ -63,28 +68,36 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   const processMarkdown = (text: string) => {
+    // Process code blocks
     let processedText = text.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, code) => {
       return `<pre class="bg-muted p-2 rounded-md overflow-x-auto my-2"><code>${code}</code></pre>`;
     });
     
+    // Process inline code
     processedText = processedText.replace(/`([^`]+)`/g, (match, code) => {
       return `<code class="bg-muted px-1 py-0.5 rounded">${code}</code>`;
     });
     
+    // Process headings
     processedText = processedText.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, content) => {
       const level = hashes.length;
       const fontSize = 6 - level + 0.75; // h1 = 1.75rem, h2 = 1.5rem, etc.
       return `<h${level} class="text-${fontSize}xl font-bold mt-4 mb-2">${content}</h${level}>`;
     });
     
+    // Process bold text
     processedText = processedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     
+    // Process italic text
     processedText = processedText.replace(/\*(.+?)\*/g, '<em>$1</em>');
     
+    // Process numbered lists
     processedText = processedText.replace(/^\d+\.\s+(.+)$/gm, '<li class="ml-4">$1</li>');
     
+    // Process bullet lists
     processedText = processedText.replace(/^-\s+(.+)$/gm, '<li class="ml-4">• $1</li>');
     
+    // Process paragraphs
     processedText = processedText.replace(/\n\n/g, '<p class="my-2"></p>');
     
     return processedText;
