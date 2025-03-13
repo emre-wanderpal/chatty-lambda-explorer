@@ -9,13 +9,30 @@ interface ChatMessageProps {
   type: MessageType;
   content: string;
   isLoading?: boolean;
+  images?: string[];
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
   type, 
   content, 
-  isLoading = false 
+  isLoading = false,
+  images = []
 }) => {
+  // Convert markdown-style code blocks to HTML
+  const processContent = (text: string) => {
+    // Handle code blocks with ```
+    const codeBlockRegex = /```(?:\w+)?\n([\s\S]*?)```/g;
+    const processedText = text.replace(codeBlockRegex, (match, code) => {
+      return `<pre class="bg-muted p-2 rounded-md overflow-x-auto my-2"><code>${code}</code></pre>`;
+    });
+    
+    // Handle inline code with `
+    const inlineCodeRegex = /`([^`]+)`/g;
+    return processedText.replace(inlineCodeRegex, (match, code) => {
+      return `<code class="bg-muted px-1 py-0.5 rounded">${code}</code>`;
+    });
+  };
+
   return (
     <div 
       className={cn(
@@ -46,7 +63,22 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           </div>
         ) : (
           <div className="prose prose-sm max-w-none">
-            <p className="m-0 text-balance leading-relaxed">{content}</p>
+            {images && images.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {images.map((image, index) => (
+                  <img 
+                    key={index} 
+                    src={`data:image/png;base64,${image}`} 
+                    alt="User uploaded" 
+                    className="max-h-40 rounded-md object-contain"
+                  />
+                ))}
+              </div>
+            )}
+            <div 
+              className="m-0 text-balance leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: processContent(content) }}
+            />
           </div>
         )}
       </div>
