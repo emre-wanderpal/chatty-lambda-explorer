@@ -1,12 +1,35 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from "react";
+import ChatContainer from "@/components/ChatContainer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <div className="mr-4 flex">
+            <a className="mr-6 flex items-center space-x-2" href="/">
+              <span className="font-bold">AI Chat</span>
+            </a>
+          </div>
+        </div>
+      </header>
+      
+      <main className="flex flex-1 flex-col">
+        <div className="container flex-1 flex items-center justify-center p-4 md:p-8">
+          <div className="w-full max-w-2xl h-[75vh] overflow-hidden rounded-xl border shadow-sm bg-card">
+            <ChatContainer initialMessage="👋 Hello! I'm your AI assistant. How can I help you today?" />
+          </div>
+        </div>
+      </main>
+      
+      <footer className="border-t py-6 md:py-0">
+        <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
+          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
+            Built with care and precision
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
