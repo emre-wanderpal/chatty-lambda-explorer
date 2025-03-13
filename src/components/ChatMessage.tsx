@@ -1,7 +1,8 @@
-
-import React from "react";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState, useRef } from "react";
+import { cn, containsLaTeX } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
+import "katex/dist/katex.min.css";
+import { InlineMath, BlockMath } from "react-katex";
 
 export type MessageType = "user" | "ai";
 
@@ -18,49 +19,72 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   isLoading = false,
   images = []
 }) => {
-  // Enhanced markdown processing
-  const processContent = (text: string) => {
-    // Handle code blocks with ```
+  const [processedContent, setProcessedContent] = useState<React.ReactNode[]>([]);
+  const contentRef = useRef(content);
+
+  useEffect(() => {
+    contentRef.current = content;
+    processMessageContent(content);
+  }, [content]);
+
+  const processMessageContent = (text: string) => {
+    const segments = text.split(/(\$\$[\s\S]*?\$\$|\$[^$\n]+?\$)/g);
+    
+    const renderedSegments: React.ReactNode[] = segments.map((segment, index) => {
+      if (segment.startsWith('$$') && segment.endsWith('$$')) {
+        const formula = segment.slice(2, -2);
+        try {
+          return (
+            <div key={index} className="my-2 overflow-x-auto">
+              <BlockMath math={formula} />
+            </div>
+          );
+        } catch (error) {
+          console.error("Error rendering block LaTeX:", error);
+          return <code key={index}>{segment}</code>;
+        }
+      } else if (segment.startsWith('$') && segment.endsWith('$')) {
+        const formula = segment.slice(1, -1);
+        try {
+          return <InlineMath key={index} math={formula} />;
+        } catch (error) {
+          console.error("Error rendering inline LaTeX:", error);
+          return <code key={index}>{segment}</code>;
+        }
+      } else {
+        const processedText = processMarkdown(segment);
+        return (
+          <span key={index} dangerouslySetInnerHTML={{ __html: processedText }} />
+        );
+      }
+    });
+    
+    setProcessedContent(renderedSegments);
+  };
+
+  const processMarkdown = (text: string) => {
     let processedText = text.replace(/```(?:\w+)?\n([\s\S]*?)```/g, (match, code) => {
       return `<pre class="bg-muted p-2 rounded-md overflow-x-auto my-2"><code>${code}</code></pre>`;
     });
     
-    // Handle inline code with `
     processedText = processedText.replace(/`([^`]+)`/g, (match, code) => {
       return `<code class="bg-muted px-1 py-0.5 rounded">${code}</code>`;
     });
     
-    // Handle headings (# Heading)
     processedText = processedText.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, content) => {
       const level = hashes.length;
       const fontSize = 6 - level + 0.75; // h1 = 1.75rem, h2 = 1.5rem, etc.
       return `<h${level} class="text-${fontSize}xl font-bold mt-4 mb-2">${content}</h${level}>`;
     });
     
-    // Handle bold text (**text**)
     processedText = processedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     
-    // Handle italic text (*text*)
     processedText = processedText.replace(/\*(.+?)\*/g, '<em>$1</em>');
     
-    // Handle ordered lists
     processedText = processedText.replace(/^\d+\.\s+(.+)$/gm, '<li class="ml-4">$1</li>');
     
-    // Handle unordered lists
     processedText = processedText.replace(/^-\s+(.+)$/gm, '<li class="ml-4">• $1</li>');
     
-    // Handle LaTeX-style math blocks with $$ delimiters
-    // Note: This is a placeholder, you would need a LaTeX renderer library to actually render LaTeX
-    processedText = processedText.replace(/\$\$(.*?)\$\$/g, (match, formula) => {
-      return `<div class="latex-block py-1 px-2 my-2 bg-muted/50 rounded-md text-center">${formula}</div>`;
-    });
-    
-    // Handle inline LaTeX with $ delimiters
-    processedText = processedText.replace(/\$([^$]+)\$/g, (match, formula) => {
-      return `<span class="latex-inline px-1 bg-muted/30 rounded">${formula}</span>`;
-    });
-    
-    // Handle line breaks
     processedText = processedText.replace(/\n\n/g, '<p class="my-2"></p>');
     
     return processedText;
@@ -108,10 +132,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                 ))}
               </div>
             )}
-            <div 
-              className="m-0 text-balance leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: processContent(content) }}
-            />
+            <div className="m-0 text-balance leading-relaxed">
+              {processedContent}
+            </div>
           </div>
         )}
       </div>

@@ -6,9 +6,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Function to check if a string contains LaTeX
+// Enhanced function to check if a string contains LaTeX with more comprehensive patterns
 export function containsLaTeX(text: string): boolean {
-  return /\$(.*?)\$/.test(text) || /\$\$(.*?)\$\$/.test(text);
+  // Check for inline math delimited by single $
+  const inlinePattern = /\$[^$\n]+?\$/g;
+  
+  // Check for block math delimited by double $$
+  const blockPattern = /\$\$[\s\S]*?\$\$/g;
+  
+  // Check for common LaTeX commands like \frac, \sum, \int, etc.
+  const commandPattern = /\\(frac|sum|int|sqrt|alpha|beta|gamma|delta|theta|lambda|pi|sigma|omega|infty|partial|nabla)/g;
+  
+  return inlinePattern.test(text) || blockPattern.test(text) || commandPattern.test(text);
 }
 
 // Function to simulate a typing delay for more natural text streaming
